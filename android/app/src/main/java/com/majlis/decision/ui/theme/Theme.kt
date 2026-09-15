@@ -1,6 +1,5 @@
 package com.majlis.decision.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
@@ -86,10 +85,8 @@ private val MajlisTypography = Typography(
 
 @Composable
 fun MajlisTheme(content: @Composable () -> Unit) {
-    // التصميم أحادي النمط عمداً: الخلفية الفحمية جزء من هويته
-    @Suppress("UNUSED_EXPRESSION")
-    isSystemInDarkTheme()
-
+    // التصميم أحادي النمط عمداً: الخلفية الفحمية جزء من هويته،
+    // فلا يتبع نمط النظام الفاتح/الداكن.
     MaterialTheme(
         colorScheme = darkColorScheme(
             primary = Palette.Accent,

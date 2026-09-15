@@ -32,7 +32,6 @@ import com.majlis.decision.ui.components.StatPill
 import com.majlis.decision.ui.components.StatStyle
 import com.majlis.decision.ui.components.StatusChip
 import com.majlis.decision.ui.theme.Palette
-import com.majlis.decision.ui.theme.Radii
 
 /**
  * شاشة «الوكلاء» — نظير شاشة People في التصميم المرجعي:

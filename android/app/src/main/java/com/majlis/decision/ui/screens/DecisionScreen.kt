@@ -29,7 +29,6 @@ import com.majlis.decision.ui.components.ArcGauge
 import com.majlis.decision.ui.components.InitialsAvatar
 import com.majlis.decision.ui.components.SoftCard
 import com.majlis.decision.ui.theme.Palette
-import com.majlis.decision.ui.theme.Radii
 
 /**
  * شاشة «القرار» — نظير شاشة Security status في التصميم المرجعي:
@@ -184,7 +183,6 @@ private fun SessionRow(entry: SessionEntry) {
                 color = Palette.TextPrimary, fontSize = 14.sp,
             )
         }
-        Spacer(Modifier.size((-8).dp.coerceAtLeast(0.dp)))
         InitialsAvatar(entry.initials, entry.accentArgb, size = 38, modifier = Modifier.padding(start = 6.dp))
         Spacer(Modifier.size(10.dp))
         Column(Modifier.weight(1f)) {

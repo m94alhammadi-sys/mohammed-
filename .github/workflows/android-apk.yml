@@ -28,8 +28,17 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: تهيئة Android SDK
-        uses: android-actions/setup-android@v3
+      # لا نستخدم android-actions/setup-android: نسخته الحالية تحاول تثبيت
+      # حزمة `tools` المهجورة فيفشل البناء. صورة ubuntu-latest تحمل
+      # Android SDK أصلاً، فنكتفي بقبول التراخيص وتثبيت ما نحتاجه.
+      - name: تهيئة حزم Android
+        run: |
+          set -euo pipefail
+          echo "ANDROID_HOME=${ANDROID_HOME:-غير مضبوط}"
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -name sdkmanager -type f | sort | tail -1)"
+          echo "sdkmanager: $SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+          "$SDKMANAGER" "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
       - name: تهيئة Gradle مع التخزين المؤقت
         uses: gradle/actions/setup-gradle@v4

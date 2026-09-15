@@ -22,6 +22,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,7 +36,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.CompositionLocalProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -138,7 +138,7 @@ fun MajlisApp(viewModel: MajlisViewModel = viewModel()) {
 
         ModeBanner(viewModel.state)
 
-        Box(Modifier.fillMaxSize()) {
+        Box(Modifier.weight(1f)) {
             when (tab) {
                 Tab.AGENTS -> AgentsScreen(
                     agents = DemoData.agents,
