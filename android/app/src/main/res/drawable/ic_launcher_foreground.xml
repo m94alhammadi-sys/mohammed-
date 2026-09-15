@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- قوس مقياس الثقة بلون التمييز -->
+    <path
+        android:fillColor="#EDFF00"
+        android:pathData="M30,66 A24,24 0 0 1 54,42 L54,52 A14,14 0 0 0 40,66 Z" />
+    <path
+        android:fillColor="#F2F4F5"
+        android:pathData="M54,42 A24,24 0 0 1 78,66 L68,66 A14,14 0 0 0 54,52 Z" />
+</vector>
