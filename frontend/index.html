@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>مجلس القرار</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23075E54'/%3E%3Ctext x='16' y='22' font-size='16' text-anchor='middle' fill='%23fff'%3E%D9%82%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- الشريط الجانبي: قائمة الدردشات -->
+  <aside class="sidebar" id="sidebar">
+    <header class="side-head">
+      <div class="me">
+        <div class="avatar me-avatar">أنا</div>
+        <div class="me-text">
+          <strong>صاحب القرار</strong>
+          <span id="modeBadge" class="badge">…</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="search">
+      <input id="chatSearch" type="search" placeholder="بحث في الدردشات" aria-label="بحث">
+    </div>
+
+    <nav class="chat-list" id="chatList" aria-label="قائمة الدردشات"></nav>
+
+    <footer class="side-foot">
+      <span class="dot" id="wsDot" aria-hidden="true"></span>
+      <span id="wsText">جارٍ الاتصال…</span>
+    </footer>
+  </aside>
+
+  <!-- لوحة المحادثة -->
+  <main class="chat" id="chat">
+    <header class="chat-head">
+      <button class="back" id="backBtn" aria-label="رجوع">›</button>
+      <div class="avatar" id="headAvatar">قر</div>
+      <div class="head-text">
+        <strong id="headName">غرفة القرار</strong>
+        <span id="headSub" class="sub">المجلس كامل — دورة تحليل شاملة</span>
+      </div>
+      <button class="icon-btn" id="clearBtn" title="مسح المحادثة" aria-label="مسح المحادثة">🗑</button>
+    </header>
+
+    <section class="messages" id="messages" aria-live="polite"></section>
+
+    <div class="typing-bar" id="typingBar" hidden></div>
+
+    <form class="composer" id="composer">
+      <select id="depth" aria-label="عمق التحليل" title="عمق التحليل">
+        <option value="quick">سريع</option>
+        <option value="standard" selected>قياسي</option>
+        <option value="deep">عميق</option>
+      </select>
+      <input id="input" type="text" autocomplete="off"
+             placeholder="اكتب الموضوع أو السؤال…" aria-label="نص الرسالة">
+      <button type="submit" id="sendBtn" aria-label="إرسال">➤</button>
+    </form>
+  </main>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
