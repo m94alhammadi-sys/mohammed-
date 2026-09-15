@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- أيقونة احتياطية لأندرويد ما قبل 8.0 حيث لا تُدعم الأيقونات التكيّفية -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path
+        android:fillColor="#23272B"
+        android:pathData="M0,0h48v48h-48z" />
+    <path
+        android:fillColor="#EDFF00"
+        android:pathData="M10,30 A14,14 0 0 1 24,16 L24,22 A8,8 0 0 0 16,30 Z" />
+    <path
+        android:fillColor="#F2F4F5"
+        android:pathData="M24,16 A14,14 0 0 1 38,30 L32,30 A8,8 0 0 0 24,22 Z" />
+</vector>

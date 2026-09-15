@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <!-- يسمح بالاتصال بخادم محلي أثناء التطوير (HTTP صريح) -->
-    <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">10.0.2.2</domain>
-        <domain includeSubdomains="true">localhost</domain>
-        <domain includeSubdomains="true">127.0.0.1</domain>
-        <domain includeSubdomains="true">192.168.0.0</domain>
-    </domain-config>
+    <!--
+      يسمح بـ HTTP الصريح لأن هذا التطبيق عميل لخادم «مجلس القرار»
+      الذي يشغّله المستخدم على جهازه أو شبكته المحلية، وغالباً بلا
+      شهادة TLS. لا يُرسل التطبيق بيانات اعتماد ولا أسراراً.
+      إن نشرت الخادم على الإنترنت فاستخدم HTTPS واحذف هذا الإعداد.
+    -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
 </network-security-config>
