@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
     <!--
-      يسمح بـ HTTP الصريح لأن هذا التطبيق عميل لخادم «مجلس القرار»
-      الذي يشغّله المستخدم على جهازه أو شبكته المحلية، وغالباً بلا
-      شهادة TLS. لا يُرسل التطبيق بيانات اعتماد ولا أسراراً.
-      إن نشرت الخادم على الإنترنت فاستخدم HTTPS واحذف هذا الإعداد.
+      التطبيق يتصل بـ api.anthropic.com عبر HTTPS حصراً، فلا حاجة
+      للسماح بـ HTTP الصريح. المنع هنا مقصود لا سهو.
     -->
-    <base-config cleartextTrafficPermitted="true">
+    <base-config cleartextTrafficPermitted="false">
         <trust-anchors>
             <certificates src="system" />
         </trust-anchors>

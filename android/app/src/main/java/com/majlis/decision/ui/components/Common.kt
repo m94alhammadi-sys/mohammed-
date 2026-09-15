@@ -1,27 +1,30 @@
 package com.majlis.decision.ui.components
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.majlis.decision.ui.theme.Palette
@@ -43,7 +46,7 @@ fun SoftCard(
     ) { content() }
 }
 
-/** زر دائري شفاف — أزرار الرجوع والإعدادات في رأس الشاشة. */
+/** زر دائري — الرجوع والإعدادات في رأس الشاشة. */
 @Composable
 fun CircleButton(
     label: String,
@@ -62,103 +65,6 @@ fun CircleButton(
         contentAlignment = Alignment.Center,
     ) {
         Text(label, color = contentColor, fontSize = 17.sp, fontWeight = FontWeight.Medium)
-    }
-}
-
-/** كبسولة تنقّل أو تصفية. */
-@Composable
-fun PillButton(
-    text: String,
-    selected: Boolean = false,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
-) {
-    Box(
-        modifier = modifier
-            .clip(Radii.Pill)
-            .background(if (selected) Palette.Accent else Palette.CardLight)
-            .clickable { onClick() }
-            .padding(horizontal = 18.dp, vertical = 11.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = text,
-            color = Palette.TextPrimary,
-            fontSize = 14.sp,
-            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
-            maxLines = 1,
-        )
-    }
-}
-
-/**
- * كبسولة إحصاء بأربعة أنماط، كما في صف المؤشرات بأعلى شاشة الصورة:
- * داكنة، ومميّزة بالأصفر، ومموّهة (مخطّطة)، ومحدّدة بإطار فقط.
- */
-enum class StatStyle { Dark, Accent, Muted, Outlined }
-
-@Composable
-fun StatPill(
-    label: String,
-    value: String,
-    style: StatStyle,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier = modifier) {
-        Text(
-            text = label,
-            color = Palette.TextOnDark.copy(alpha = 0.85f),
-            fontSize = 11.sp,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-        Spacer(Modifier.height(6.dp))
-        Box(
-            modifier = Modifier
-                .clip(Radii.Pill)
-                .then(
-                    when (style) {
-                        StatStyle.Dark -> Modifier.background(Palette.CardDark)
-                        StatStyle.Accent -> Modifier.background(Palette.Accent)
-                        StatStyle.Muted -> Modifier.background(Palette.Background.copy(alpha = 0.55f))
-                        StatStyle.Outlined -> Modifier.border(1.5.dp, Palette.CardLight, Radii.Pill)
-                    }
-                )
-                .padding(horizontal = 16.dp, vertical = 10.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = value,
-                color = when (style) {
-                    StatStyle.Dark -> Palette.TextOnDark
-                    StatStyle.Accent -> Palette.TextPrimary
-                    else -> Palette.TextOnDark
-                },
-                fontSize = 13.sp,
-                fontWeight = FontWeight.SemiBold,
-            )
-        }
-    }
-}
-
-/** شارة حالة صغيرة بنقطة ملوّنة. */
-@Composable
-fun StatusChip(
-    text: String,
-    dotColor: Color = Palette.ChipDot,
-    background: Color = Palette.Chip,
-    textColor: Color = Palette.TextPrimary,
-) {
-    Row(
-        modifier = Modifier
-            .clip(Radii.Pill)
-            .background(background)
-            .padding(horizontal = 12.dp, vertical = 7.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(Modifier.size(7.dp).clip(CircleShape).background(dotColor))
-        Spacer(Modifier.width(7.dp))
-        Text(text, color = textColor, fontSize = 12.sp, fontWeight = FontWeight.Medium)
     }
 }
 
@@ -186,36 +92,55 @@ fun InitialsAvatar(
     }
 }
 
-/** عمود حقل: عنوان صغير فوق قيمة — كما في شبكة بطاقة الشخص. */
+/**
+ * مقياس قوسي — العنصر المميّز في التصميم المرجعي («Security status»).
+ * يظهر هنا داخل فقاعة القرار حيث يحمل معنى: ثقة الوكيل التنسيقي.
+ */
 @Composable
-fun FieldColumn(
-    label: String,
-    value: String,
+fun ArcGauge(
+    value: Double,
+    caption: String,
     modifier: Modifier = Modifier,
-    valueColor: Color = Palette.TextPrimary,
+    trackColor: Color = Palette.CardDark,
+    progressColor: Color = Palette.Accent,
 ) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(3.dp)) {
-        Text(label, color = Palette.TextMuted, fontSize = 11.sp, maxLines = 1)
-        Text(
-            value,
-            color = valueColor,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.SemiBold,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-    }
-}
+    val target = value.coerceIn(0.0, 1.0).toFloat()
+    val animated by animateFloatAsState(
+        targetValue = target,
+        animationSpec = tween(durationMillis = 800),
+        label = "gauge",
+    )
 
-/** فاصل منقّط أفقي، كما في بطاقة الجهاز السفلية في التصميم. */
-@Composable
-fun DottedDivider(modifier: Modifier = Modifier, color: Color = Palette.Outline) {
-    Row(
-        modifier = modifier.fillMaxWidth().height(2.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        repeat(44) {
-            Box(Modifier.size(2.dp).clip(CircleShape).background(color))
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+        Canvas(modifier = Modifier.fillMaxWidth().height(96.dp)) {
+            val strokeWidth = 20.dp.toPx()
+            val inset = strokeWidth / 2f
+            val diameter = minOf(size.width - strokeWidth, (size.height - inset) * 2f)
+            val arcSize = Size(diameter, diameter)
+            val topLeft = Offset((size.width - diameter) / 2f, inset)
+
+            drawArc(
+                color = trackColor, startAngle = 180f, sweepAngle = 180f, useCenter = false,
+                topLeft = topLeft, size = arcSize,
+                style = Stroke(width = strokeWidth, cap = StrokeCap.Round),
+            )
+            drawArc(
+                color = progressColor, startAngle = 180f, sweepAngle = 180f * animated,
+                useCenter = false, topLeft = topLeft, size = arcSize,
+                style = Stroke(width = strokeWidth, cap = StrokeCap.Round),
+            )
+        }
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(top = 30.dp),
+        ) {
+            Text(
+                "${(target * 100).toInt()}%",
+                color = Palette.TextPrimary, fontSize = 26.sp, fontWeight = FontWeight.SemiBold,
+            )
+            Spacer(Modifier.height(1.dp))
+            Text(caption, color = Palette.TextMuted, fontSize = 11.sp)
         }
     }
 }
