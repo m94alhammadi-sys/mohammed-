@@ -263,7 +263,24 @@ html, body {
   border-radius: 12px;
   max-width: 80%;
   text-align: center;
+  white-space: pre-wrap;          /* رسائل النظام قد تكون متعددة الأسطر */
+  overflow-wrap: anywhere;
 }
+
+/* رسالة نظام طويلة (مثل تقرير صحة المصادر) تُقرأ كقائمة لا كفقرة موسّطة */
+.system.block {
+  align-self: stretch;
+  max-width: 100%;
+  text-align: start;
+  line-height: 1.7;
+  padding: 10px 14px;
+  background: var(--in-bubble);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  border-inline-start: 3px solid var(--muted);
+  border-radius: var(--radius);
+}
+.system.block b { color: var(--text); }
 
 .empty {
   margin: auto;

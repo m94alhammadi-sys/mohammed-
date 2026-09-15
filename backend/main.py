@@ -26,6 +26,7 @@ from .formatting import decision_to_text, report_to_text
 from .llm import llm
 from .memory import SqliteBM25Store
 from .orchestrator import SPECIALISTS, Orchestrator
+from .tools import close_clients, probe_sources
 from .schemas import AgentId, ChatMessage, CycleRequest, now_iso
 from .store import ChatStore
 
@@ -51,6 +52,7 @@ async def lifespan(_app: FastAPI):
         task.cancel()
         with contextlib.suppress(asyncio.CancelledError):
             await task
+    await close_clients()
 
 
 app = FastAPI(
@@ -243,6 +245,58 @@ async def _cycle_task(request: CycleRequest, topic: str) -> None:
         meta={"decision_id": decision.decision_id, "confidence": decision.confidence,
               "risk": decision.risk_score, "stance": decision.stance.value},
     ))
+
+
+@app.get("/api/sources")
+async def source_health() -> dict[str, Any]:
+    """فحص حيّ لكل موصلات البيانات — ما الذي يعمل على هذا الجهاز الآن.
+
+    يفصل بين ثلاث حالات لأن علاج كلٍّ منها مختلف:
+    يعمل، ويحتاج مفتاحاً (يصلحه المستخدم)، ومحجوب أو معطّل (لا يصلحه).
+    """
+    probes = await probe_sources()
+    working = [p for p in probes if p["ok"]]
+    needs_key = [p for p in probes if not p["ok"] and p["actionable"]]
+    broken = [p for p in probes if not p["ok"] and not p["actionable"]]
+    return {
+        "checked_at": now_iso(),
+        "summary": {
+            "total": len(probes),
+            "working": len(working),
+            "needs_key": len(needs_key),
+            "unavailable": len(broken),
+        },
+        "sources": sorted(probes, key=lambda p: (not p["ok"], p["agent"])),
+        "hint": (
+            "المصادر التي تحتاج مفاتيح تُضبط في ملف .env؛ "
+            "والمحجوبة غالباً بسبب شبكة أو وكيل يمنع الخروج."
+        ),
+    }
+
+
+@app.post("/api/sources/report")
+async def source_health_report(chat_id: str = WAR_ROOM) -> dict[str, Any]:
+    """يفحص المصادر وينشر النتيجة كرسالة داخل الدردشة."""
+    health = await source_health()
+    summary = health["summary"]
+    lines = [
+        "*فحص صحة مصادر البيانات*",
+        f"يعمل: {summary['working']} | يحتاج مفتاحاً: {summary['needs_key']} "
+        f"| غير متاح: {summary['unavailable']}",
+        "",
+    ]
+    for probe in health["sources"]:
+        mark = "✅" if probe["ok"] else ("🔑" if probe["actionable"] else "⛔")
+        lines.append(f"{mark} {probe['source']} — {probe['state']}")
+        if probe["detail"]:
+            lines.append(f"   ↳ {probe['detail'][:160]}")
+    lines += ["", health["hint"]]
+
+    message = await push_message(ChatMessage(
+        chat_id=chat_id, author=AgentId.CHIEF.value, kind="system",
+        text="\n".join(lines), meta={"sources": summary},
+    ))
+    return message.model_dump(mode="json")
 
 
 @app.get("/api/decisions")

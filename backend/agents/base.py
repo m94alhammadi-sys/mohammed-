@@ -16,7 +16,7 @@ from ..prompts import system_prompt_for
 from ..schemas import (
     AgentId, AgentReport, Evidence, ReportDraft, Signal, now_iso,
 )
-from ..tools import ConnectorResult, gather_context
+from ..tools import ConnectorResult, coverage, gather_context
 
 log = logging.getLogger(__name__)
 
@@ -90,6 +90,7 @@ class SpecialistAgent:
         connector_results = await gather_context(self.agent_id, topic)
         evidence = [e for r in connector_results if r.ok for e in r.evidence]
         failures = [r for r in connector_results if not r.ok]
+        cover = coverage(connector_results)
 
         research_text = ""
         web_evidence: list[Evidence] = []
@@ -107,10 +108,14 @@ class SpecialistAgent:
             used_web = research.used_web
 
         evidence = self._merge_evidence(evidence, web_evidence)
+        # العمى الكامل وحده يرفع `degraded`: لا دليل واحد وصل ولا بحث حي.
+        # مفتاح ناقص مع بقاء مصادر أخرى حية نقصُ تغطية يُعلَن ولا يُسقط التقرير.
         degraded = not evidence and not used_web
 
         draft = await self._draft(topic, research_text, evidence, failures, depth)
-        report = self._assemble(topic, draft, evidence, degraded, failures, used_web)
+        report = self._assemble(
+            topic, draft, evidence, degraded, failures, used_web, cover
+        )
         self._remember(report)
         return report
 
@@ -213,7 +218,7 @@ class SpecialistAgent:
             ),
             signals=[],
             risks=["التقرير بديل ولا يعكس تحليلاً فعلياً"],
-            data_gaps=[f"{f.name}: {f.note}" for f in failures]
+            data_gaps=[f.gap_text for f in failures]
             or ["النموذج اللغوي غير مفعّل"],
             unverified_claims=[],
             confidence=0.05,
@@ -226,6 +231,7 @@ class SpecialistAgent:
     def _assemble(
         self, topic: str, draft: ReportDraft, evidence: list[Evidence],
         degraded: bool, failures: list[ConnectorResult], used_web: bool,
+        cover: dict[str, object] | None = None,
     ) -> AgentReport:
         max_index = len(evidence) - 1
         signals = [
@@ -241,9 +247,8 @@ class SpecialistAgent:
 
         gaps = list(draft.data_gaps)
         for failure in failures:
-            entry = f"{failure.name}: {failure.note}"
-            if entry not in gaps:
-                gaps.append(entry)
+            if failure.gap_text not in gaps:
+                gaps.append(failure.gap_text)
 
         unsourced = [s.name for s in signals if not s.evidence_refs]
         unverified = list(draft.unverified_claims)
@@ -255,6 +260,17 @@ class SpecialistAgent:
         confidence = draft.confidence
         if degraded:
             confidence = min(confidence, 0.25)
+
+        cover = cover or {}
+        coverage_note = ""
+        if cover:
+            coverage_note = (
+                f" | تغطية المصادر {cover.get('ok', 0)}/{cover.get('total', 0)}"
+            )
+            if cover.get("missing_keys"):
+                coverage_note += (
+                    f" | بانتظار مفاتيح: {', '.join(cover['missing_keys'])}"
+                )
 
         return AgentReport(
             agent_id=self.agent_id,
@@ -269,7 +285,8 @@ class SpecialistAgent:
             confidence=round(confidence, 4),
             urgency=draft.urgency,
             degraded=degraded,
-            notes=draft.notes + ("" if used_web else " | لم يُستخدم بحث حي."),
+            notes=(draft.notes + ("" if used_web else " | لم يُستخدم بحث حي.")
+                   + coverage_note),
         )
 
     # ------------------------------------------------------------ الذاكرة

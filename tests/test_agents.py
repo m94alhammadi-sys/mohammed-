@@ -175,3 +175,54 @@ class TestChiefAgent:
         decision = await ChiefAgent(FakeLLM(fail_structure=True)).synthesize("الذهب", reports)
         assert decision.confidence <= 0.10
         assert any("لم يُركَّب القرار" in flag for flag in decision.quality_flags)
+
+
+class TestSourceDegradation:
+    """التمييز بين نقص التغطية والعمى الكامل — أهم ما يغيّر ثقة القرار."""
+
+    async def test_missing_key_alone_does_not_degrade_the_report(self, connectors):
+        from backend.tools.base import ConnectorResult, FailureKind
+
+        connectors["results"] = [
+            ok_connector("news:geo"),
+            ConnectorResult.failed("social:x", "X_BEARER_TOKEN غير مضبوط",
+                                   FailureKind.MISSING_KEY),
+        ]
+        agent = SpecialistAgent(AgentId.SOCIAL, FakeLLM())
+        result = await agent.run("الذهب")
+        assert result.degraded is False            # مصدر حي واحد يكفي للرؤية
+        assert result.confidence > 0.25
+
+    async def test_missing_key_is_still_declared_as_a_gap(self, connectors):
+        from backend.tools.base import ConnectorResult, FailureKind
+
+        connectors["results"] = [
+            ok_connector("news:geo"),
+            ConnectorResult.failed("social:x", "X_BEARER_TOKEN غير مضبوط",
+                                   FailureKind.MISSING_KEY),
+        ]
+        agent = SpecialistAgent(AgentId.SOCIAL, FakeLLM())
+        result = await agent.run("الذهب")
+        assert any("مفتاح غير مضبوط" in gap for gap in result.data_gaps)
+
+    async def test_gap_text_names_the_failure_kind(self, connectors):
+        from backend.tools.base import ConnectorResult, FailureKind
+
+        connectors["results"] = [
+            ConnectorResult.failed("news:geo", "403", FailureKind.BLOCKED)
+        ]
+        agent = SpecialistAgent(AgentId.GEO, FakeLLM(research_evidence=[]))
+        result = await agent.run("الذهب")
+        assert any("وصول محجوب" in gap for gap in result.data_gaps)
+
+    async def test_coverage_summary_reaches_the_notes(self, connectors):
+        from backend.tools.base import ConnectorResult, FailureKind
+
+        connectors["results"] = [
+            ok_connector("news:geo"),
+            ConnectorResult.failed("social:x", "لا مفتاح", FailureKind.MISSING_KEY),
+        ]
+        agent = SpecialistAgent(AgentId.SOCIAL, FakeLLM())
+        result = await agent.run("الذهب")
+        assert "تغطية المصادر 1/2" in result.notes
+        assert "بانتظار مفاتيح: social:x" in result.notes

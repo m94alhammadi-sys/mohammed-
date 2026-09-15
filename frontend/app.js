@@ -30,6 +30,7 @@
     search: document.getElementById("chatSearch"),
     backBtn: document.getElementById("backBtn"),
     clearBtn: document.getElementById("clearBtn"),
+    healthBtn: document.getElementById("healthBtn"),
   };
 
   const STATUS_TEXT = {
@@ -121,8 +122,11 @@
   function bubbleFor(message) {
     if (message.kind === "system") {
       const node = document.createElement("div");
-      node.className = "system";
-      node.textContent = message.text;
+      const multiline = message.text.includes("\n");
+      node.className = multiline ? "system block" : "system";
+      // السطر الواحد نص خام؛ والمتعدد يمر بالتنسيق الخفيف (*عريض* وروابط)
+      if (multiline) node.innerHTML = renderText(message.text);
+      else node.textContent = message.text;
       return node;
     }
 
@@ -334,6 +338,26 @@
     if (!text) return;
     el.input.value = "";
     send(text);
+  });
+
+  el.healthBtn.addEventListener("click", async () => {
+    el.healthBtn.disabled = true;
+    const original = el.healthBtn.textContent;
+    el.healthBtn.textContent = "…";
+    try {
+      // الفحص يلمس كل مصدر فعلياً، فقد يستغرق ثوانيَ عدة
+      await api(`/api/sources/report?chat_id=${encodeURIComponent(state.active)}`,
+                { method: "POST" });
+    } catch (error) {
+      onMessage({
+        id: `err_${Date.now()}`, chat_id: state.active, author: "system",
+        text: `تعذّر فحص المصادر: ${error.message}`, ts: new Date().toISOString(),
+        kind: "system", meta: {},
+      });
+    } finally {
+      el.healthBtn.disabled = false;
+      el.healthBtn.textContent = original;
+    }
   });
 
   el.search.addEventListener("input", renderChatList);

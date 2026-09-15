@@ -142,3 +142,51 @@ def test_websocket_streams_chat_messages(client):
 def test_index_page_is_served(client):
     response = client.get("/")
     assert response.status_code == 200 and "مجلس القرار" in response.text
+
+
+# ------------------------------------------------------- صحة المصادر
+
+def _stub_probe(monkeypatch, probes):
+    async def fake():
+        return probes
+
+    import backend.main as main
+
+    monkeypatch.setattr(main, "probe_sources", fake)
+
+
+def test_source_health_separates_the_three_states(client, monkeypatch):
+    """الفصل مهم لأن علاج كل حالة مختلف: يعمل / يحتاج مفتاحاً / محجوب."""
+    _stub_probe(monkeypatch, [
+        {"agent": "the_trader", "source": "market:quotes", "ok": True,
+         "state": "يعمل", "detail": "8 أدوات", "evidence": 8, "actionable": False},
+        {"agent": "abu_aloloum", "source": "social:x", "ok": False,
+         "state": "مفتاح غير مضبوط", "detail": "X_BEARER_TOKEN",
+         "evidence": 0, "actionable": True},
+        {"agent": "political_analyst", "source": "news:geo", "ok": False,
+         "state": "وصول محجوب", "detail": "403", "evidence": 0, "actionable": False},
+    ])
+    body = client.get("/api/sources").json()
+    assert body["summary"] == {"total": 3, "working": 1, "needs_key": 1, "unavailable": 1}
+    assert body["sources"][0]["ok"] is True          # العاملة أولاً
+
+
+def test_source_health_report_posts_a_readable_message(client, monkeypatch):
+    _stub_probe(monkeypatch, [
+        {"agent": "abu_aloloum", "source": "social:x", "ok": False,
+         "state": "مفتاح غير مضبوط", "detail": "X_BEARER_TOKEN غير مضبوط",
+         "evidence": 0, "actionable": True},
+    ])
+    message = client.post("/api/sources/report").json()
+    assert message["kind"] == "system"
+    assert "🔑" in message["text"] and "social:x" in message["text"]
+    assert message["meta"]["sources"]["needs_key"] == 1
+
+
+def test_source_health_report_marks_outages_differently(client, monkeypatch):
+    _stub_probe(monkeypatch, [
+        {"agent": "political_analyst", "source": "news:geo", "ok": False,
+         "state": "وصول محجوب", "detail": "403", "evidence": 0, "actionable": False},
+    ])
+    text = client.post("/api/sources/report").json()["text"]
+    assert "⛔" in text and "🔑" not in text
