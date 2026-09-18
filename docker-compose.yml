@@ -1,0 +1,12 @@
+services:
+  advisor:
+    build: .
+    container_name: economic-advisor
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - DB_PATH=/app/data/agent.db
