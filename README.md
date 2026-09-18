@@ -74,7 +74,20 @@ docker compose up -d
 docker compose logs -f
 ```
 
-### 3) ربط واتساب
+### 3) تأكد أن كل شي مضبوط
+
+```bash
+python -m app.doctor
+```
+
+أداة الفحص تجرّب مفتاح Claude والاتصال بواتساب ومصدر الأسعار، وتقول لك
+بالضبط وش ناقص وكيف تصلّحه.
+
+### 4) ربط واتساب
+
+📘 **الدليل الكامل خطوة بخطوة: [`docs/ربط-واتساب.md`](docs/ربط-واتساب.md)**
+
+باختصار:
 
 #### الخيار أ — Meta WhatsApp Cloud API (موصى به، رسمي ومجاني للبداية)
 
@@ -112,7 +125,7 @@ TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
 في [Twilio Console](https://console.twilio.com) → WhatsApp Sandbox، اضبط
 **When a message comes in** على `https://xxxx.ngrok-free.app/webhook/whatsapp`.
 
-### 4) الاختبار بدون واتساب
+### 5) الاختبار بدون واتساب
 
 ```bash
 curl -X POST localhost:8000/admin/test-message \
