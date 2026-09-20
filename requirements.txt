@@ -1,0 +1,9 @@
+# المستشار المالي الذكي — الاعتماديات
+anthropic>=1.7.0
+python-telegram-bot[job-queue]>=21.6
+httpx>=0.27,<1.0
+python-dotenv>=1.0.1
+
+# لواجهة واتساب (اختياري)
+fastapi>=0.115.0
+uvicorn>=0.30.0
