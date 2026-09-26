@@ -1,4 +1,4 @@
-# Sky Avero — موقع المنتجات والأسعار
+# Sky Avero Coffee — موقع المنتجات والأسعار
 
 موقع ثابت (HTML/CSS/JS) لعرض منتجات حساب [@skyavero](https://www.instagram.com/skyavero/) وأسعارها، مع سلة وطلب مباشر عبر واتساب أو انستقرام.
 

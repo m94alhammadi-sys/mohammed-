@@ -3,16 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sky Avero | المنتجات والأسعار</title>
-  <meta name="description" content="متجر Sky Avero - المنتجات والأسعار والطلب مباشرة">
+  <title>Sky Avero Coffee</title>
+  <meta name="description" content="Sky Avero Coffee - قهوة مختصة V60، المنتجات والأسعار والطلب مباشرة">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="assets/logo.png">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="topbar">
     <div class="wrap topbar-inner">
-      <a href="#" class="logo" id="logo"></a>
+      <a href="#" class="logo"><img src="assets/logo.png" alt=""><span id="logo"></span></a>
       <button class="cart-btn" id="cartBtn" aria-label="السلة">
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6 5 3H2"/><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/></svg>
         <span class="count" id="cartCount">0</span>
@@ -22,7 +23,9 @@
 
   <section class="hero">
     <div class="wrap">
+      <img class="hero-logo" src="assets/logo.png" alt="Sky Avero">
       <h1 id="storeName"></h1>
+      <p class="sub" id="subtitle"></p>
       <p id="tagline"></p>
       <div class="hero-actions">
         <a href="#products" class="btn primary">تصفح المنتجات</a>
@@ -36,6 +39,7 @@
       <input type="search" id="search" placeholder="ابحث عن منتج…">
       <div class="filters" id="filters"></div>
     </div>
+    <p class="note" id="note"></p>
     <div class="grid" id="grid"></div>
     <p class="empty" id="empty" hidden>لا توجد منتجات مطابقة.</p>
   </main>

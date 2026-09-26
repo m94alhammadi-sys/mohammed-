@@ -5,30 +5,26 @@
 
 const STORE = {
   name: "Sky Avero",
-  tagline: "منتجات مختارة بعناية… بجودة تستاهلها",
+  subtitle: "Coffee | قهوة مختصة",
+  tagline: "قهوة مختصة V60 ☕ — علامة إماراتية مرخصة 🇦🇪",
+  note: "كل بوكس يحتوي على 8 أكياس — اختر نكهاتك بنفسك",
   instagram: "skyavero",
-  // رقم الواتساب بالصيغة الدولية بدون + أو أصفار بالبداية، مثال: 9715XXXXXXXX
-  // اتركه فاضي "" إذا تبي الطلب يكون عن طريق الانستقرام فقط
+  // رقم الواتساب بالصيغة الدولية بدون + ، مثال: 9715XXXXXXXX
+  // إذا كان فاضي، يكون الطلب عن طريق رسائل الانستقرام
   whatsapp: "",
-  currency: "د.إ",
+  currency: "درهم",
 };
 
-// لكل منتج:
-//  name: اسم المنتج
-//  category: التصنيف (يظهر كفلتر تلقائياً)
-//  price: السعر الحالي (رقم)
-//  oldPrice: السعر قبل الخصم (اختياري)
-//  image: رابط الصورة أو مسار ملف داخل مجلد assets (اختياري)
-//  description: وصف قصير
-//  badge: شارة مثل "جديد" أو "الأكثر مبيعاً" (اختياري)
-//  available: false إذا المنتج نافد
-//
-//  ⚠️ المنتجات التالية أمثلة مؤقتة — استبدلها بمنتجات الحساب الحقيقية
+// لكل منتج: name, origin, category, price, oldPrice (اختياري), image (اختياري),
+// description, badge (اختياري), available: false إذا نفد
 const PRODUCTS = [
-  { name: "منتج مثال 1", category: "الأكثر طلباً", price: 120, oldPrice: 150, image: "", description: "وصف قصير للمنتج يوضح مميزاته.", badge: "خصم" },
-  { name: "منتج مثال 2", category: "الأكثر طلباً", price: 95, image: "", description: "وصف قصير للمنتج يوضح مميزاته.", badge: "الأكثر مبيعاً" },
-  { name: "منتج مثال 3", category: "جديدنا", price: 180, image: "", description: "وصف قصير للمنتج يوضح مميزاته.", badge: "جديد" },
-  { name: "منتج مثال 4", category: "جديدنا", price: 75, image: "", description: "وصف قصير للمنتج يوضح مميزاته." },
-  { name: "منتج مثال 5", category: "بكجات", price: 250, oldPrice: 300, image: "", description: "بكج يجمع أكثر من منتج بسعر مميز.", badge: "توفير" },
-  { name: "منتج مثال 6", category: "بكجات", price: 199, image: "", description: "بكج يجمع أكثر من منتج بسعر مميز.", available: false },
+  { name: "Blueberry", origin: "Ethiopia", category: "إثيوبيا", price: 55, description: "قهوة إثيوبية مختصة بنكهة التوت الأزرق — بوكس 8 أكياس." },
+  { name: "Roco", origin: "Ethiopia", category: "إثيوبيا", price: 55, description: "قهوة إثيوبية مختصة — بوكس 8 أكياس." },
+  { name: "Hambela", origin: "Ethiopia", category: "إثيوبيا", price: 60, description: "قهوة إثيوبية من منطقة هامبيلا — بوكس 8 أكياس." },
+  { name: "Santa Ana", origin: "Colombia", category: "كولومبيا", price: 55, description: "قهوة كولومبية مختصة — بوكس 8 أكياس." },
+  { name: "Passion Fruit", origin: "Colombia", category: "كولومبيا", price: 70, description: "قهوة كولومبية بنكهة فاكهة الباشن فروت — بوكس 8 أكياس." },
+  { name: "Berries", origin: "Colombia", category: "كولومبيا", price: 70, description: "قهوة كولومبية بنكهة التوتيات — بوكس 8 أكياس." },
+  { name: "Strawberry", origin: "Colombia", category: "كولومبيا", price: 70, description: "قهوة كولومبية بنكهة الفراولة — بوكس 8 أكياس." },
+  { name: "Grape", origin: "Colombia", category: "كولومبيا", price: 70, description: "قهوة كولومبية بنكهة العنب — بوكس 8 أكياس." },
+  { name: "Mixed Coffee Box", origin: "Mix", category: "بوكس مشكّل", price: 65, description: "بوكس مشكّل من نكهاتنا — 8 أكياس.", badge: "اختر نكهاتك" },
 ];

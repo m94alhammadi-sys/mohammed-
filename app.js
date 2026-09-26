@@ -1,12 +1,14 @@
 (function () {
   const $ = (id) => document.getElementById(id);
-  const money = (n) => `${Number(n).toLocaleString("ar-EG")} ${STORE.currency}`;
+  const money = (n) => `${Number(n).toLocaleString("en-US")} ${STORE.currency}`;
   const igUrl = `https://www.instagram.com/${STORE.instagram}/`;
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
   $("logo").textContent = STORE.name;
   $("storeName").textContent = STORE.name;
   $("tagline").textContent = STORE.tagline;
+  $("subtitle").textContent = STORE.subtitle;
+  $("note").textContent = STORE.note;
   $("footName").textContent = STORE.name;
   $("year").textContent = new Date().getFullYear();
   $("igLink").href = igUrl;
@@ -29,11 +31,11 @@
   function render() {
     const items = PRODUCTS.map((p, i) => ({ ...p, i })).filter((p) =>
       (filter === "الكل" || p.category === filter) &&
-      (!query || (p.name + " " + (p.description || "")).includes(query)));
+      (!query || (p.name + " " + (p.origin || "") + " " + (p.description || "")).toLowerCase().includes(query.toLowerCase())));
     $("empty").hidden = items.length > 0;
     $("grid").innerHTML = items.map((p) => {
       const soldOut = p.available === false;
-      const img = p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : esc(p.name.trim().charAt(0));
+      const img = p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : `<span class="ph"><small>${esc(p.origin || "")}</small>${esc(p.name)}</span>`;
       return `<article class="card${soldOut ? " soldout" : ""}">
         <div class="thumb">${img}${p.badge ? `<span class="badge">${esc(p.badge)}</span>` : ""}</div>
         <div class="body">
@@ -71,6 +73,7 @@
     $("cartCount").textContent = count;
     $("cartTotal").textContent = money(total());
     $("orderWa").hidden = !STORE.whatsapp;
+    $("orderIg").className = "btn full " + (STORE.whatsapp ? "ghost" : "primary");
     $("orderWa").disabled = $("orderIg").disabled = count === 0;
     $("cartItems").innerHTML = count === 0
       ? `<p class="empty">السلة فاضية</p>`

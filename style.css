@@ -1,9 +1,9 @@
 :root{
-  --bg:#f7f5f2; --card:#fff; --ink:#1d1b19; --muted:#6f6a64; --line:#e8e3dc;
-  --accent:#2f5d8a; --accent-ink:#fff; --sale:#b8412e; --radius:16px;
+  --bg:#f5f1ea; --card:#fffdf9; --ink:#14203a; --muted:#6b6558; --line:#e6ddcc;
+  --accent:#14203a; --accent-ink:#f3e6c8; --gold:#b8955a; --navy:#14203a; --sale:#b8412e; --radius:16px;
 }
 @media (prefers-color-scheme:dark){
-  :root{ --bg:#151413; --card:#1f1d1b; --ink:#f2eee9; --muted:#a39d96; --line:#302d2a; --accent:#7fb0e0; --accent-ink:#10202f; --sale:#ef8b77; }
+  :root:not([data-theme="light"]){ --bg:#0c1426; --card:#141e35; --ink:#f1ead9; --muted:#a8a08f; --line:#26314b; --accent:#c9a66b; --accent-ink:#0c1426; --gold:#c9a66b; --navy:#0c1426; --sale:#ef8b77; }
 }
 *{box-sizing:border-box}
 body{margin:0;font-family:"Tajawal",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
@@ -33,9 +33,9 @@ a{color:inherit;text-decoration:none}
 .chip{white-space:nowrap;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 16px;border-radius:999px;font:inherit;cursor:pointer}
 .chip.active{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;margin-bottom:56px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:56px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
-.thumb{position:relative;aspect-ratio:1;background:linear-gradient(135deg,var(--line),var(--bg));display:grid;place-items:center;color:var(--muted);font-weight:800;font-size:2.4rem}
+.thumb{position:relative;aspect-ratio:1;display:grid;place-items:center;color:var(--muted);font-weight:800;font-size:2.4rem}
 .thumb img{width:100%;height:100%;object-fit:cover}
 .badge{position:absolute;top:10px;right:10px;background:var(--ink);color:var(--bg);font-size:.8rem;font-weight:700;padding:3px 10px;border-radius:999px}
 .soldout .thumb::after{content:"نفدت الكمية";position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.45);color:#fff;font-size:1.1rem}
@@ -67,3 +67,20 @@ a{color:inherit;text-decoration:none}
 .hint{margin:0;color:var(--muted);font-size:.85rem;text-align:center}
 
 .footer{border-top:1px solid var(--line);padding:24px 0;text-align:center;color:var(--muted);font-size:.9rem}
+
+.logo{display:flex;align-items:center;gap:10px}
+.logo img{width:36px;height:36px;border-radius:50%}
+.hero-logo{width:120px;height:120px;border-radius:50%;margin-bottom:16px;box-shadow:0 0 0 3px var(--gold)}
+.hero .sub{color:var(--gold);font-weight:700;margin:-4px 0 8px}
+.note{text-align:center;color:var(--gold);font-weight:700;margin:0 0 20px}
+.thumb{background:radial-gradient(circle at 50% 35%,#223257,#0c1426)}
+.ph{display:flex;flex-direction:column;align-items:center;gap:4px;color:#d8bb85;font-size:1.6rem;font-weight:800;text-align:center;padding:0 12px;letter-spacing:.5px}
+.ph small{font-size:.8rem;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:#a8b3c9}
+.badge{background:var(--gold);color:#0c1426}
+.thumb{aspect-ratio:4/3}
+@media (max-width:480px){
+  .ph{font-size:1.15rem}
+  .body{padding:12px}
+  .price-row{flex-wrap:wrap}
+  .add{width:100%}
+}
